@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,10 +45,17 @@ fun ExerciseLogScreen(exerciseLogViewModel: ExerciseLogViewModel,
     val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
 
+
     val context = LocalContext.current
+    var selectedActivity by remember { mutableStateOf("") }
 
 
-    var selectedActivity by remember { mutableStateOf("Select Exercise") }
+    // Update the selected activity dynamically when allExercises changes
+    LaunchedEffect(allExercises) {
+        if (allExercises.isNotEmpty() && selectedActivity.isEmpty()) {
+            selectedActivity = allExercises[0].name // Set the first exercise as default
+        }
+    }
     var number by remember { mutableStateOf("") }
 
 

@@ -1,6 +1,7 @@
 package com.example.exerciseapp.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -9,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [ExerciseLog::class, Exercise::class], version = 2, exportSchema = false)
+@Database(entities = [ExerciseLog::class, Exercise::class], version = 1, exportSchema = false)
 abstract class ExerciseLogDatabase : RoomDatabase() {
     abstract fun exerciseLogDao(): ExerciseLogDao
     abstract fun exerciseDao(): ExerciseDao
@@ -27,6 +28,8 @@ abstract class ExerciseLogDatabase : RoomDatabase() {
                 ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
+
+
                         val defaultExercises = listOf(
                             Exercise(name = "Push-ups"),
                             Exercise(name = "Squats"),
