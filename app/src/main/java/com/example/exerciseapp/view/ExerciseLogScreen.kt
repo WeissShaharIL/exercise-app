@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,16 +39,32 @@ import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
+import com.example.exerciseapp.viewmodel.UserViewModel
 
 @Composable
 fun ExerciseLogScreen(
     exerciseLogViewModel: ExerciseLogViewModel,
-    exerciseViewModel: ExerciseViewModel
+    exerciseViewModel: ExerciseViewModel,
+    userViewModel: UserViewModel
 ) {
     val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
     val context = LocalContext.current
+    val user by userViewModel.user.observeAsState(null)
     var selectedActivity by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+
+    var height by remember { mutableStateOf("1.50") } // Default height as a string
+    var weight by remember { mutableStateOf("") }
+
+// Pre-fill height and weight when the dialog is opened
+    LaunchedEffect(showDialog) {
+        if (showDialog) {
+            height = user?.height?.toString() ?: ""
+            weight = user?.weight?.toString() ?: ""
+        }
+    }
+
 
     // Update the selected activity dynamically when allExercises changes
     LaunchedEffect(allExercises) {
@@ -94,7 +111,6 @@ fun ExerciseLogScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Input for Number
         OutlinedTextField(
             value = number,
             onValueChange = { number = it },
@@ -122,8 +138,6 @@ fun ExerciseLogScreen(
                 }
             },
             modifier = Modifier.padding(horizontal = 8.dp),
-
-
             ) {
             Text("Add")
         }
@@ -136,7 +150,72 @@ fun ExerciseLogScreen(
                 ExerciseLogRow(log = log, onDelete = { exerciseLogViewModel.deleteLogById(log.id) })
             }
         }
+        // Button at the Bottom
+        val buttonColor = if (user == null) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary
+        Button(
+            onClick = { showDialog = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            enabled = true,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = buttonColor)
+        ) {
+            Text("User Database Button")
+        }
     }
+    if (showDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val heightValue = height.toFloatOrNull()
+                        val weightValue = weight.toFloatOrNull()
+                        if (heightValue != null && heightValue > 0 && weightValue != null && weightValue > 0) {
+                            userViewModel.saveUser(height = heightValue, weight = weightValue)
+                            Toast.makeText(context, "User details saved successfully!", Toast.LENGTH_SHORT).show()
+                            showDialog = false // Close the dialog
+                        } else {
+                            Toast.makeText(context, "Please enter a valid height and weight!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text("Enter User Details") },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Height: ${String.format("%.2f", height.toFloatOrNull() ?: 1.5f)} m",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Slider(
+                        value = height.toFloatOrNull() ?: 1.5f, // Safe conversion with default
+                        onValueChange = { newHeight -> height = String.format("%.2f", newHeight) }, // Format to 2 decimals
+                        valueRange = 0.5f..2.5f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = weight,
+                        onValueChange = { weight = it },
+                        label = { Text("Weight (e.g., 70 kg)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        )
+    }
+
 }
 
 @Composable
@@ -148,7 +227,8 @@ fun ExerciseLogRow(log: ExerciseLog, onDelete: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "${log.activity}: ${log.number}", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "${log.activity}: ${log.number}",
+            style = MaterialTheme.typography.bodyLarge)
         IconButton(onClick = { onDelete() }) {
             Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Log")
         }

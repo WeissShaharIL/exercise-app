@@ -30,9 +30,11 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 
 import android.view.WindowManager
+import com.example.exerciseapp.data.ExerciseLogDatabase
+import com.example.exerciseapp.data.UserRepository
 import com.example.exerciseapp.viewmodel.AppStateViewModel
-
-
+import com.example.exerciseapp.viewmodel.UserViewModel
+import com.example.exerciseapp.viewmodel.UserViewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -71,17 +73,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-//
-//@Composable
-//fun AppContent(application: Application) {
-//    var showSplash by remember { mutableStateOf(true) }
-//
-//    if (showSplash) {
-//        SplashScreen(onTimeout = { showSplash = false })
-//    } else {
-//        MainScreen(application = application)
-//    }
-//}
 
 @Composable
 fun AppContent(appStateViewModel: AppStateViewModel, application: Application) {
@@ -108,9 +99,15 @@ fun MainScreen(application: Application) {
             "ExerciseViewModel",
             ExerciseViewModelFactory(application = application)
         )
+        val userViewModel: UserViewModel = viewModel(
+            it,
+            "UserViewModel",
+            UserViewModelFactory(UserRepository(ExerciseLogDatabase.getInstance(application).userDao()))
+        )
         ExerciseLogScreen(
             exerciseLogViewModel = exerciseLogViewModel,
-            exerciseViewModel = exerciseViewModel
+            exerciseViewModel = exerciseViewModel,
+            userViewModel = userViewModel
         )
     }
 }

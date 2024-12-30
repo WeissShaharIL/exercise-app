@@ -10,10 +10,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [ExerciseLog::class, Exercise::class], version = 1, exportSchema = false)
+@Database(entities = [ExerciseLog::class, Exercise::class, User::class], version = 1, exportSchema = false)
 abstract class ExerciseLogDatabase : RoomDatabase() {
     abstract fun exerciseLogDao(): ExerciseLogDao
     abstract fun exerciseDao(): ExerciseDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
@@ -29,15 +30,23 @@ abstract class ExerciseLogDatabase : RoomDatabase() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
 
+                        // Use INSTANCE directly to avoid recursive calls
+                        INSTANCE?.let { database ->
+                            val defaultExercises = listOf(
+                                Exercise(name = "Push-ups"),
+                                Exercise(name = "Squats"),
+                                Exercise(name = "Sit-ups")
+                            )
 
-                        val defaultExercises = listOf(
-                            Exercise(name = "Push-ups"),
-                            Exercise(name = "Squats"),
-                            Exercise(name = "Sit-ups")
-                        )
-                        CoroutineScope(Dispatchers.IO).launch {
-                            getInstance(context).exerciseDao().apply {
-                                defaultExercises.forEach { insertExercise(it) }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    database.exerciseDao().apply {
+                                        defaultExercises.forEach { insertExercise(it) }
+                                    }
+                                    Log.d("ExerciseLogDatabase", "Default exercises inserted successfully.")
+                                } catch (e: Exception) {
+                                    Log.e("ExerciseLogDatabase", "Error inserting default exercises: ${e.message}")
+                                }
                             }
                         }
                     }
