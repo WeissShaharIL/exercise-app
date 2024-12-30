@@ -1,5 +1,7 @@
 package com.example.exerciseapp
 
+import ExerciseLogScreen
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exerciseapp.ui.theme.ExerciseAppTheme
 import com.example.exerciseapp.view.SplashScreen
+import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
+import com.example.exerciseapp.viewmodel.ExerciseLogViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppContent()
+                    AppContent(application = application)
 
                 }
             }
@@ -36,17 +42,25 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppContent() {
+fun AppContent(application: Application) {
     var showSplash by remember { mutableStateOf(true) }
 
     if (showSplash) {
         SplashScreen(onTimeout = { showSplash = false })
     } else {
-        MainScreen() // Replace this with your main content composable
+        MainScreen(application = application)
     }
 }
 
 @Composable
-fun MainScreen() {
-    Text("This is the main screen!")
+fun MainScreen(application: Application) {
+    val owner = LocalViewModelStoreOwner.current
+    owner?.let {
+        val viewModel: ExerciseLogViewModel = viewModel(
+            it,
+            "ExerciseLogViewModel",
+            ExerciseLogViewModelFactory(application = application)
+        )
+        ExerciseLogScreen(viewModel = viewModel) // Show the main exercise log screen
+    }
 }
