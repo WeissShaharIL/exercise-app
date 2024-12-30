@@ -24,10 +24,20 @@ import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModelFactory
 import com.example.exerciseapp.viewmodel.ExerciseViewModelFactory
+import android.os.Build
+import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+
+import android.view.WindowManager
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hideSystemBars()
+
+
         setContent {
             ExerciseAppTheme {
                 // A surface container using the 'background' color from the theme
@@ -39,6 +49,20 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
+        }
+    }
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.decorView.setOnApplyWindowInsetsListener { _, insets ->
+                window.insetsController?.hide(WindowInsets.Type.statusBars())
+                insets
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
         }
     }
 }

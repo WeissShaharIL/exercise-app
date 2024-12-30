@@ -40,15 +40,14 @@ import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
 
 @Composable
-fun ExerciseLogScreen(exerciseLogViewModel: ExerciseLogViewModel,
-                      exerciseViewModel: ExerciseViewModel) {
+fun ExerciseLogScreen(
+    exerciseLogViewModel: ExerciseLogViewModel,
+    exerciseViewModel: ExerciseViewModel
+) {
     val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
-
-
     val context = LocalContext.current
     var selectedActivity by remember { mutableStateOf("") }
-
 
     // Update the selected activity dynamically when allExercises changes
     LaunchedEffect(allExercises) {
@@ -57,21 +56,22 @@ fun ExerciseLogScreen(exerciseLogViewModel: ExerciseLogViewModel,
         }
     }
     var number by remember { mutableStateOf("") }
-
-
-
     var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(top = 24.dp, start = 16.dp, end = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Dropdown for Activity Selection
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
             Button(
                 onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 Text(selectedActivity)
             }
@@ -121,9 +121,11 @@ fun ExerciseLogScreen(exerciseLogViewModel: ExerciseLogViewModel,
                     ).show()
                 }
             },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Add Exercise")
+            modifier = Modifier.padding(horizontal = 8.dp),
+
+
+            ) {
+            Text("Add")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
