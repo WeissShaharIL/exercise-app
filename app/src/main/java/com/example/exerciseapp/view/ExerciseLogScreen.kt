@@ -1,10 +1,7 @@
 package com.example.exerciseapp.view
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,15 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.platform.LocalContext
 import com.example.exerciseapp.view.components.ExerciseLogRow
 import androidx.compose.foundation.lazy.items
-
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -40,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
 import com.example.exerciseapp.view.components.ActivityDropdown
+import com.example.exerciseapp.view.components.UserDetailsDialog
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
@@ -59,6 +50,8 @@ fun ExerciseLogScreen(
 
     var height by remember { mutableStateOf("1.50") } // Default height as a string
     var weight by remember { mutableStateOf("") }
+    var number by remember { mutableStateOf("") }
+
 
 // Pre-fill height and weight when the dialog is opened
     LaunchedEffect(showDialog) {
@@ -75,8 +68,8 @@ fun ExerciseLogScreen(
             selectedActivity = allExercises[0].name // Set the first exercise as default
         }
     }
-    var number by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+
+    //var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -147,57 +140,19 @@ fun ExerciseLogScreen(
             Text("User Database Button")
         }
     }
+
     if (showDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val heightValue = height.toFloatOrNull()
-                        val weightValue = weight.toFloatOrNull()
-                        if (heightValue != null && heightValue > 0 && weightValue != null && weightValue > 0) {
-                            userViewModel.saveUser(height = heightValue, weight = weightValue)
-                            Toast.makeText(context, "User details saved successfully!", Toast.LENGTH_SHORT).show()
-                            showDialog = false // Close the dialog
-                        } else {
-                            Toast.makeText(context, "Please enter a valid height and weight!", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showDialog = false }) {
-                    Text("Cancel")
-                }
-            },
-            title = { Text("Enter User Details") },
-            text = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Height: ${String.format("%.2f", height.toFloatOrNull() ?: 1.5f)} m",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Slider(
-                        value = height.toFloatOrNull() ?: 1.5f, // Safe conversion with default
-                        onValueChange = { newHeight -> height = String.format("%.2f", newHeight) }, // Format to 2 decimals
-                        valueRange = 0.5f..2.5f,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = weight,
-                        onValueChange = { weight = it },
-                        label = { Text("Weight (e.g., 70 kg)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+        UserDetailsDialog(
+            initialHeight = user?.height?.toString() ?: "1.50",
+            initialWeight = user?.weight?.toString() ?: "",
+            onDismiss = { showDialog = false },
+            onSave = { height, weight ->
+                userViewModel.saveUser(height = height, weight = weight)
+                Toast.makeText(context, "User details saved successfully!", Toast.LENGTH_SHORT).show()
+                showDialog = false
             }
         )
     }
+
 
 }
