@@ -38,16 +38,32 @@ import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
+import com.example.exerciseapp.viewmodel.UserViewModel
 
 @Composable
 fun ExerciseLogScreen(
     exerciseLogViewModel: ExerciseLogViewModel,
-    exerciseViewModel: ExerciseViewModel
+    exerciseViewModel: ExerciseViewModel,
+    userViewModel: UserViewModel
 ) {
     val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
     val context = LocalContext.current
+    val user by userViewModel.user.observeAsState(null)
     var selectedActivity by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+
+    var height by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+
+// Pre-fill height and weight when the dialog is opened
+    LaunchedEffect(showDialog) {
+        if (showDialog) {
+            height = user?.height?.toString() ?: ""
+            weight = user?.weight?.toString() ?: ""
+        }
+    }
+
 
     // Update the selected activity dynamically when allExercises changes
     LaunchedEffect(allExercises) {
@@ -94,7 +110,6 @@ fun ExerciseLogScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Input for Number
         OutlinedTextField(
             value = number,
             onValueChange = { number = it },
@@ -122,8 +137,6 @@ fun ExerciseLogScreen(
                 }
             },
             modifier = Modifier.padding(horizontal = 8.dp),
-
-
             ) {
             Text("Add")
         }
@@ -136,6 +149,64 @@ fun ExerciseLogScreen(
                 ExerciseLogRow(log = log, onDelete = { exerciseLogViewModel.deleteLogById(log.id) })
             }
         }
+        // Button at the Bottom
+        val buttonColor = if (user == null) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary
+        Button(
+            onClick = { showDialog = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            enabled = true,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = buttonColor)
+        ) {
+            Text("User Database Button")
+        }
+    }
+    if (showDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val heightValue = height.toFloatOrNull()
+                        val weightValue = weight.toFloatOrNull()
+                        if (heightValue != null && weightValue != null && heightValue > 0 && weightValue > 0) {
+                            userViewModel.saveUser(height = heightValue, weight = weightValue)
+                            showDialog = false // Close the dialog
+                        } else {
+                            Toast.makeText(context, "Please enter valid height and weight!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            title = { Text("Enter User Details") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = height,
+                        onValueChange = { height = it },
+                        label = { Text("Height (e.g., 170)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = weight,
+                        onValueChange = { weight = it },
+                        label = { Text("Weight (e.g., 70)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        )
     }
 }
 
