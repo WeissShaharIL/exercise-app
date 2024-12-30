@@ -36,15 +36,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
+import com.example.exerciseapp.viewmodel.ExerciseViewModel
 
 @Composable
-fun ExerciseLogScreen(viewModel: ExerciseLogViewModel) {
-    val allLogs by viewModel.allLogs.observeAsState(listOf())
+fun ExerciseLogScreen(exerciseLogViewModel: ExerciseLogViewModel,
+                      exerciseViewModel: ExerciseViewModel) {
+    val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
+    val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
+
     val context = LocalContext.current
 
-    var selectedActivity by remember { mutableStateOf("Push-ups") }
+
+    var selectedActivity by remember { mutableStateOf("Select Exercise") }
     var number by remember { mutableStateOf("") }
-    val activities = listOf("Push-ups", "Squats", "Sit-ups")
+
+
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -64,18 +70,19 @@ fun ExerciseLogScreen(viewModel: ExerciseLogViewModel) {
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
-            )  {
-                activities.forEach { activity ->
+            ) {
+                allExercises.forEach { exercise ->
                     DropdownMenuItem(
-                        text = { Text(activity) },
+                        text = { Text(exercise.name) },
                         onClick = {
-                            selectedActivity = activity
+                            selectedActivity = exercise.name
                             expanded = false
                         }
                     )
                 }
             }
         }
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -93,11 +100,17 @@ fun ExerciseLogScreen(viewModel: ExerciseLogViewModel) {
         Button(
             onClick = {
                 val count = number.toIntOrNull()
-                if (count != null && count > 0) { // Only proceed if input is valid and greater than 0
-                    viewModel.insertLog(ExerciseLog(activity = selectedActivity, number = count))
-                    number = "" // Clear the input
+                if (selectedActivity != "Select Exercise" && count != null && count > 0) {
+                    exerciseLogViewModel.insertLog(
+                        ExerciseLog(activity = selectedActivity, number = count)
+                    )
+                    number = "" // Clear input
                 } else {
-                    Toast.makeText(context, "Please enter a valid number!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Please select an exercise and enter a valid number!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -110,7 +123,7 @@ fun ExerciseLogScreen(viewModel: ExerciseLogViewModel) {
         // Logs List
         LazyColumn {
             items(allLogs) { log ->
-                ExerciseLogRow(log = log, onDelete = { viewModel.deleteLogById(log.id) })
+                ExerciseLogRow(log = log, onDelete = { exerciseLogViewModel.deleteLogById(log.id) })
             }
         }
     }

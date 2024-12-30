@@ -23,3 +23,11 @@ class ExerciseLogRepository(private val exerciseLogDao: ExerciseLogDao) {
         }
     }
 }
+
+class ExerciseRepository(private val exerciseDao: ExerciseDao) {
+    val allExercises = exerciseDao.getAllExercises()
+
+    suspend fun insertExercise(exercise: Exercise) {
+        exerciseDao.insertExercise(exercise)
+    }
+}

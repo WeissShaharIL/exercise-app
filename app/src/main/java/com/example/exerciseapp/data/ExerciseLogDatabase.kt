@@ -4,10 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-@Database(entities = [ExerciseLog::class], version = 1, exportSchema = false)
+@Database(entities = [ExerciseLog::class, Exercise::class], version = 2, exportSchema = false)
 abstract class ExerciseLogDatabase : RoomDatabase() {
     abstract fun exerciseLogDao(): ExerciseLogDao
+    abstract fun exerciseDao(): ExerciseDao
 
     companion object {
         @Volatile
@@ -19,7 +24,21 @@ abstract class ExerciseLogDatabase : RoomDatabase() {
                     context.applicationContext,
                     ExerciseLogDatabase::class.java,
                     "exercise_log_database"
-                ).fallbackToDestructiveMigration().build()
+                ).addCallback(object : Callback() {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        val defaultExercises = listOf(
+                            Exercise(name = "Push-ups"),
+                            Exercise(name = "Squats"),
+                            Exercise(name = "Sit-ups")
+                        )
+                        CoroutineScope(Dispatchers.IO).launch {
+                            getInstance(context).exerciseDao().apply {
+                                defaultExercises.forEach { insertExercise(it) }
+                            }
+                        }
+                    }
+                }).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

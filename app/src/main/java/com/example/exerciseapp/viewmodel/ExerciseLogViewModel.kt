@@ -35,3 +35,4 @@ class ExerciseLogViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 }
+
