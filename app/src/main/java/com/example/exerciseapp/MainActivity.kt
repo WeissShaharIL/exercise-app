@@ -30,6 +30,9 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 
 import android.view.WindowManager
+import com.example.exerciseapp.viewmodel.AppStateViewModel
+
+
 
 
 class MainActivity : ComponentActivity() {
@@ -39,13 +42,15 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
+            val appStateViewModel: AppStateViewModel = viewModel()
+
             ExerciseAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppContent(application = application)
+                    AppContent(appStateViewModel = appStateViewModel, application = application)
 
                 }
             }
@@ -66,17 +71,28 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+//
+//@Composable
+//fun AppContent(application: Application) {
+//    var showSplash by remember { mutableStateOf(true) }
+//
+//    if (showSplash) {
+//        SplashScreen(onTimeout = { showSplash = false })
+//    } else {
+//        MainScreen(application = application)
+//    }
+//}
 
 @Composable
-fun AppContent(application: Application) {
-    var showSplash by remember { mutableStateOf(true) }
+fun AppContent(appStateViewModel: AppStateViewModel, application: Application) {
+    if (appStateViewModel.showSplash) {
 
-    if (showSplash) {
-        SplashScreen(onTimeout = { showSplash = false })
+        SplashScreen(onTimeout = { appStateViewModel.hideSplashScreen() })
     } else {
         MainScreen(application = application)
     }
 }
+
 
 @Composable
 fun MainScreen(application: Application) {

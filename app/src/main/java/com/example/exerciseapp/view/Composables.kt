@@ -1,5 +1,6 @@
 package com.example.exerciseapp.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.runtime.Composable
@@ -17,16 +18,15 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
     LaunchedEffect(Unit) {
-        delay(2000) // Show splash for 3 seconds
-        onTimeout() // Navigate to the next screen
+        delay(2000) // Show splash for 2 seconds
+        Log.d("SplashScreen", "Timeout completed") // Debugging log
+        onTimeout() // Notify AppStateViewModel to hide splash
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        // Display the animated GIF using Glide
         GlideImage(
             model = exercise, // Path to your GIF in the raw folder
             contentDescription = "Animated Splash Screen",
