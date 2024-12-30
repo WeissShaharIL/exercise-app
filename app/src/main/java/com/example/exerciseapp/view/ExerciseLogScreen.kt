@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,7 +54,7 @@ fun ExerciseLogScreen(
     var selectedActivity by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
 
-    var height by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("1.50") } // Default height as a string
     var weight by remember { mutableStateOf("") }
 
 // Pre-fill height and weight when the dialog is opened
@@ -170,11 +171,12 @@ fun ExerciseLogScreen(
                     onClick = {
                         val heightValue = height.toFloatOrNull()
                         val weightValue = weight.toFloatOrNull()
-                        if (heightValue != null && weightValue != null && heightValue > 0 && weightValue > 0) {
+                        if (heightValue != null && heightValue > 0 && weightValue != null && weightValue > 0) {
                             userViewModel.saveUser(height = heightValue, weight = weightValue)
+                            Toast.makeText(context, "User details saved successfully!", Toast.LENGTH_SHORT).show()
                             showDialog = false // Close the dialog
                         } else {
-                            Toast.makeText(context, "Please enter valid height and weight!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Please enter a valid height and weight!", Toast.LENGTH_SHORT).show()
                         }
                     }
                 ) {
@@ -188,19 +190,24 @@ fun ExerciseLogScreen(
             },
             title = { Text("Enter User Details") },
             text = {
-                Column {
-                    OutlinedTextField(
-                        value = height,
-                        onValueChange = { height = it },
-                        label = { Text("Height (e.g., 170)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Height: ${String.format("%.2f", height.toFloatOrNull() ?: 1.5f)} m",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Slider(
+                        value = height.toFloatOrNull() ?: 1.5f, // Safe conversion with default
+                        onValueChange = { newHeight -> height = String.format("%.2f", newHeight) }, // Format to 2 decimals
+                        valueRange = 0.5f..2.5f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = weight,
                         onValueChange = { weight = it },
-                        label = { Text("Weight (e.g., 70)") },
+                        label = { Text("Weight (e.g., 70 kg)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -208,6 +215,7 @@ fun ExerciseLogScreen(
             }
         )
     }
+
 }
 
 @Composable
@@ -219,7 +227,8 @@ fun ExerciseLogRow(log: ExerciseLog, onDelete: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "${log.activity}: ${log.number}", style = MaterialTheme.typography.bodyLarge)
+        Text(text = "${log.activity}: ${log.number}",
+            style = MaterialTheme.typography.bodyLarge)
         IconButton(onClick = { onDelete() }) {
             Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Log")
         }
