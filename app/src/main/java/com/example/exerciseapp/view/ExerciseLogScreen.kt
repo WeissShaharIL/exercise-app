@@ -1,3 +1,5 @@
+package com.example.exerciseapp.view
+
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.platform.LocalContext
-
+import com.example.exerciseapp.view.components.ExerciseLogRow
 import androidx.compose.foundation.lazy.items
 
 import androidx.compose.foundation.text.KeyboardOptions
@@ -216,21 +218,4 @@ fun ExerciseLogScreen(
         )
     }
 
-}
-
-@Composable
-fun ExerciseLogRow(log: ExerciseLog, onDelete: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = "${log.activity}: ${log.number}",
-            style = MaterialTheme.typography.bodyLarge)
-        IconButton(onClick = { onDelete() }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Log")
-        }
-    }
 }

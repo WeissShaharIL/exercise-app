@@ -1,6 +1,6 @@
 package com.example.exerciseapp
 
-import ExerciseLogScreen
+import com.example.exerciseapp.view.ExerciseLogScreen
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,14 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.exerciseapp.ui.theme.ExerciseAppTheme
@@ -25,17 +19,13 @@ import com.example.exerciseapp.viewmodel.ExerciseViewModel
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModelFactory
 import com.example.exerciseapp.viewmodel.ExerciseViewModelFactory
 import android.os.Build
-import android.view.Window
 import android.view.WindowInsets
-import android.view.WindowInsetsController
-
 import android.view.WindowManager
 import com.example.exerciseapp.data.ExerciseLogDatabase
 import com.example.exerciseapp.data.UserRepository
 import com.example.exerciseapp.viewmodel.AppStateViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
 import com.example.exerciseapp.viewmodel.UserViewModelFactory
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +73,6 @@ fun AppContent(appStateViewModel: AppStateViewModel, application: Application) {
         MainScreen(application = application)
     }
 }
-
 
 @Composable
 fun MainScreen(application: Application) {
