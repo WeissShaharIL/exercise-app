@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
+import com.example.exerciseapp.view.components.ActivityDropdown
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
@@ -84,31 +85,12 @@ fun ExerciseLogScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Dropdown for Activity Selection
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(
-                onClick = { expanded = true },
-                modifier = Modifier.padding(horizontal = 8.dp)
-            ) {
-                Text(selectedActivity)
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                allExercises.forEach { exercise ->
-                    DropdownMenuItem(
-                        text = { Text(exercise.name) },
-                        onClick = {
-                            selectedActivity = exercise.name
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
+        ActivityDropdown(
+            activities = allExercises,
+            selectedActivity = selectedActivity,
+            onActivitySelected = { selectedActivity = it }
+        )
+
 
 
         Spacer(modifier = Modifier.height(8.dp))
