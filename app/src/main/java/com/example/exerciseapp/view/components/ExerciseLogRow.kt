@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
 import com.example.exerciseapp.data.ExerciseLog
 
 @Composable
@@ -20,9 +21,10 @@ fun ExerciseLogRow(log: ExerciseLog, onDelete: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(horizontal = 4.dp) // Adjust as needed for less horizontal padding
+            .padding(vertical = 0.dp), // Reduced vertical padding
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "${log.activity}: ${log.number}",

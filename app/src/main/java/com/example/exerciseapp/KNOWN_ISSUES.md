@@ -13,7 +13,7 @@ This file documents known bugs in the project.
   4. Attempt to save the data.
 - **Impact**: Prevents saving default height without user interaction.
 - **Workaround**: Adjust the slider slightly before saving.
-- **Status**: Open.
+- **Status**: 🔴 Open
 
 ### Bug ID: BUG-002
 - **Description**: When adding multiple activity entries, the "User Database Button" is pushed downwards and eventually out of the visible screen area. This occurs because the entries are not confined to a scrollable area, causing them to expand and take up the entire vertical space.
@@ -23,7 +23,7 @@ This file documents known bugs in the project.
   3. Observe the "User Database Button" being displaced further down with each new entry.
 - **Impact**: UI Problem - button should be in a fixed place; entries should scroll in their own area instead of pushing the button.
 - **Workaround**: None.
-- **Status**: Open.
+- **Status**: 🟢 Closed
 
 ### Bug ID: BUG-003
 - **Description**: Slider for height precision issue causes the stored value in the database to have floating-point errors. For example, setting the slider to `1.81` may result in a stored value of `1.809999942779541`.
@@ -33,4 +33,4 @@ This file documents known bugs in the project.
   3. Save the data and inspect the database entry.
 - **Impact**: Precision error in the database for height values.
 - **Workaround**: Round the value in queries or UI before displaying it.
-- **Status**: Open.
+- **Status**: 🔴 Open
