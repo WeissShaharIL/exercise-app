@@ -1,6 +1,8 @@
 package com.example.exerciseapp.view
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
@@ -50,43 +53,79 @@ fun ExerciseLogScreen(
     var showDialog by remember { mutableStateOf(false) }
     val number = remember { mutableStateOf("") }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 24.dp, start = 16.dp, end = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        ActivityDropdown(
-            activities = allExercises,
-            selectedActivity = selectedActivity,
-            onActivitySelected = { selectedActivity = it }
-        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Dropdown for activity selection
+            ActivityDropdown(
+                activities = allExercises,
+                selectedActivity = selectedActivity,
+                onActivitySelected = { selectedActivity = it }
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        AddActivityLog(
-            selectedActivity = selectedActivity,
-            number = number,
-            onClearInput = { number.value = "" },
-            exerciseLogViewModel = exerciseLogViewModel
-        )
+            // Input and Add Button
+            AddActivityLog(
+                selectedActivity = selectedActivity,
+                number = number,
+                onClearInput = { number.value = "" },
+                exerciseLogViewModel = exerciseLogViewModel
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        LazyColumn {
-            items(allLogs) { log ->
-                ExerciseLogRow(log = log, onDelete = { exerciseLogViewModel.deleteLogById(log.id) })
+            // Scrollable log entries with fade-out effect
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 72.dp) // Padding to avoid overlap with button
+                ) {
+                    items(allLogs) { log ->
+                        ExerciseLogRow(
+                            log = log,
+                            onDelete = { exerciseLogViewModel.deleteLogById(log.id) }
+                        )
+                    }
+                }
+
+                // Fade-out effect
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(96.dp) // Increased height for better visibility
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            )
+                        )
+                )
             }
         }
 
-        val buttonColor = if (user == null) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary
+        // Fixed button at the bottom
         Button(
             onClick = { showDialog = true },
             modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
                 .padding(16.dp)
-                .fillMaxWidth(),
-            enabled = true,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = buttonColor)
         ) {
             Text("User Database Button")
         }
