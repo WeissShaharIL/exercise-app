@@ -13,13 +13,18 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     private val _user = MutableLiveData<User?>()
     val user: LiveData<User?> = _user
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     init {
         fetchLastUser() // Fetch data when ViewModel is created
     }
 
     private fun fetchLastUser() {
+        _isLoading.value = true // Start loading
         viewModelScope.launch {
             _user.value = repository.getLastUser()
+            _isLoading.value = false // Stop loading
         }
     }
 
