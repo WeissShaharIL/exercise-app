@@ -61,10 +61,10 @@ fun ExerciseLogScreen(
     var selectedActivity by remember { mutableStateOf("") }
 
     LaunchedEffect(allUserRecords) {
-        println("DEBUG: LaunchedEffect triggered. allUserRecords size: ${allUserRecords.size}, showProgressDialog: $showProgressDialog")
+
         if (allUserRecords.isNotEmpty() && !showProgressDialog) {
             showProgressDialog = true
-            println("DEBUG: showProgressDialog set to true within LaunchedEffect")
+
         }
     }
 
@@ -136,7 +136,7 @@ fun ExerciseLogScreen(
 
             Button(
                 onClick = {
-                    println("DEBUG: Progress button clicked")
+
                     userViewModel.fetchAllUsers()
                     showProgressDialog = false // Ensure previous state doesn't interfere
                     showProgressDialog = true // Trigger dialog opening
@@ -161,11 +161,11 @@ fun ExerciseLogScreen(
     }
 
     if (showProgressDialog) {
-        Text("DEBUG: Dialog should appear")
+
         ProgressDialog(
             records = allUserRecords,
             onDismiss = {
-                println("DEBUG: ProgressDialog dismissed")
+
                 showProgressDialog = false
             }
         )

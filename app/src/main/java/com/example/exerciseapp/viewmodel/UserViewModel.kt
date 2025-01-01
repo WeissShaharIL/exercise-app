@@ -36,13 +36,6 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             _allUserRecords.value = repository.getAllUsers()
             _isLoading.value = false
 
-
-            // Debug: Log the retrieved data
-            val users = repository.getAllUsers()
-            println("DEBUG: Retrieved users: $users")
-            println("DEBUG: fetchAllUsers completed. Records: ${_allUserRecords.value}")
-
-
         }
     }
 
