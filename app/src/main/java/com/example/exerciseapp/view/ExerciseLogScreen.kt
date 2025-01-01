@@ -1,14 +1,18 @@
 package com.example.exerciseapp.view
 
+
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.platform.LocalContext
 import com.example.exerciseapp.view.components.ExerciseLogRow
@@ -33,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.example.exerciseapp.data.ExerciseLog
 import com.example.exerciseapp.view.components.ActivityDropdown
 import com.example.exerciseapp.view.components.AddActivityLog
+import com.example.exerciseapp.view.components.ProgressDialog
 import com.example.exerciseapp.view.components.UserDetailsDialog
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
@@ -48,10 +53,21 @@ fun ExerciseLogScreen(
     val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
     val user by userViewModel.user.observeAsState(null)
+    val allUserRecords by userViewModel.allUserRecords.observeAsState(emptyList())
 
-    var selectedActivity by remember { mutableStateOf("") }
+    var showProgressDialog by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     val number = remember { mutableStateOf("") }
+    var selectedActivity by remember { mutableStateOf("") }
+
+    LaunchedEffect(allUserRecords) {
+        println("DEBUG: LaunchedEffect triggered. allUserRecords size: ${allUserRecords.size}, showProgressDialog: $showProgressDialog")
+        if (allUserRecords.isNotEmpty() && !showProgressDialog) {
+            showProgressDialog = true
+            println("DEBUG: showProgressDialog set to true within LaunchedEffect")
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -81,7 +97,7 @@ fun ExerciseLogScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Scrollable log entries with fade-out effect
+            // Scrollable log entries
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -90,7 +106,7 @@ fun ExerciseLogScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = 72.dp) // Padding to avoid overlap with button
+                        .padding(bottom = 72.dp)
                 ) {
                     items(allLogs) { log ->
                         ExerciseLogRow(
@@ -99,35 +115,36 @@ fun ExerciseLogScreen(
                         )
                     }
                 }
-
-                // Fade-out effect
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(96.dp) // Increased height for better visibility
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                    MaterialTheme.colorScheme.surface
-                                )
-                            )
-                        )
-                )
             }
         }
 
-        // Fixed button at the bottom
-        Button(
-            onClick = { showDialog = true },
+        // Buttons at the bottom
+        Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("User Database Button")
+            Button(
+                onClick = { showDialog = true },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("User Database")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    println("DEBUG: Progress button clicked")
+                    userViewModel.fetchAllUsers()
+                    showProgressDialog = false // Ensure previous state doesn't interfere
+                    showProgressDialog = true // Trigger dialog opening
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Progress")
+            }
         }
     }
 
@@ -139,6 +156,17 @@ fun ExerciseLogScreen(
             onSave = { height, weight ->
                 userViewModel.saveUser(height = height, weight = weight)
                 showDialog = false
+            }
+        )
+    }
+
+    if (showProgressDialog) {
+        Text("DEBUG: Dialog should appear")
+        ProgressDialog(
+            records = allUserRecords,
+            onDismiss = {
+                println("DEBUG: ProgressDialog dismissed")
+                showProgressDialog = false
             }
         )
     }

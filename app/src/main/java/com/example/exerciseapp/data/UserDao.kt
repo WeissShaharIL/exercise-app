@@ -16,4 +16,8 @@ interface UserDao {
     @Query("SELECT * FROM user ORDER BY id DESC LIMIT 1") // Fetch the last row
     suspend fun getLastUser(): User?
 
+    @Query("SELECT * FROM user")
+    suspend fun getAllUsers(): List<User>
+
+
 }
