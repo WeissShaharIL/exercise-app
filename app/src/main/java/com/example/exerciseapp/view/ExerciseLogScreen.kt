@@ -1,145 +1,155 @@
-package com.example.exerciseapp.view
+package com.example.exerciseapp
 
-import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import com.example.exerciseapp.view.ExerciseLogScreen
+import android.app.Application
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.ui.platform.LocalContext
-import com.example.exerciseapp.view.components.ExerciseLogRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import com.example.exerciseapp.data.ExerciseLog
-import com.example.exerciseapp.view.components.ActivityDropdown
-import com.example.exerciseapp.view.components.AddActivityLog
-import com.example.exerciseapp.view.components.UserDetailsDialog
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.exerciseapp.ui.theme.ExerciseAppTheme
+import com.example.exerciseapp.view.SplashScreen
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
+import com.example.exerciseapp.viewmodel.ExerciseLogViewModelFactory
+import com.example.exerciseapp.viewmodel.ExerciseViewModelFactory
+import android.os.Build
+import android.view.WindowInsets
+import android.view.WindowManager
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.navigation.compose.composable
+import com.example.exerciseapp.data.ExerciseLogDatabase
+import com.example.exerciseapp.data.UserRepository
+import com.example.exerciseapp.view.InitScreen
+import com.example.exerciseapp.viewmodel.AppStateViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
+import com.example.exerciseapp.viewmodel.UserViewModelFactory
+import com.example.exerciseapp.view.components.LoadingScreen
 
 
-@Composable
-fun ExerciseLogScreen(
-    exerciseLogViewModel: ExerciseLogViewModel,
-    exerciseViewModel: ExerciseViewModel,
-    userViewModel: UserViewModel
-) {
-    val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
-    val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
-    val user by userViewModel.user.observeAsState(null)
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        hideSystemBars()
 
-    var selectedActivity by remember { mutableStateOf("") }
-    var showDialog by remember { mutableStateOf(false) }
-    val number = remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Dropdown for activity selection
-            ActivityDropdown(
-                activities = allExercises,
-                selectedActivity = selectedActivity,
-                onActivitySelected = { selectedActivity = it }
-            )
+        setContent {
+            val appStateViewModel: AppStateViewModel = viewModel()
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Input and Add Button
-            AddActivityLog(
-                selectedActivity = selectedActivity,
-                number = number,
-                onClearInput = { number.value = "" },
-                exerciseLogViewModel = exerciseLogViewModel
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Scrollable log entries with fade-out effect
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 72.dp) // Padding to avoid overlap with button
+            ExerciseAppTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    items(allLogs) { log ->
-                        ExerciseLogRow(
-                            log = log,
-                            onDelete = { exerciseLogViewModel.deleteLogById(log.id) }
-                        )
-                    }
+                    AppContent(appStateViewModel = appStateViewModel, application = application)
+
                 }
-
-                // Fade-out effect
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(96.dp) // Increased height for better visibility
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.surface.copy(alpha = 0f),
-                                    MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                    MaterialTheme.colorScheme.surface
-                                )
-                            )
-                        )
-                )
             }
-        }
-
-        // Fixed button at the bottom
-        Button(
-            onClick = { showDialog = true },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("User Database Button")
         }
     }
-
-    if (showDialog) {
-        UserDetailsDialog(
-            initialHeight = user?.height?.toString() ?: "1.50",
-            initialWeight = user?.weight?.toString() ?: "",
-            onDismiss = { showDialog = false },
-            onSave = { height, weight ->
-                userViewModel.saveUser(height = height, weight = weight)
-                showDialog = false
+    private fun hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.decorView.setOnApplyWindowInsetsListener { _, insets ->
+                window.insetsController?.hide(WindowInsets.Type.statusBars())
+                insets
             }
+        } else {
+            @Suppress("DEPRECATION")
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+    }
+}
+
+@Composable
+fun AppContent(appStateViewModel: AppStateViewModel, application: Application) {
+    if (appStateViewModel.showSplash) {
+
+        SplashScreen(onTimeout = { appStateViewModel.hideSplashScreen() })
+    } else {
+        MainScreen(application = application)
+    }
+}
+
+@Composable
+fun MainScreen(application: Application) {
+    val owner = LocalViewModelStoreOwner.current
+    owner?.let {
+        // ViewModel instances
+        val exerciseLogViewModel: ExerciseLogViewModel = viewModel(
+            it,
+            "ExerciseLogViewModel",
+            ExerciseLogViewModelFactory(application = application)
+        )
+        val exerciseViewModel: ExerciseViewModel = viewModel(
+            it,
+            "ExerciseViewModel",
+            ExerciseViewModelFactory(application = application)
+        )
+        val userViewModel: UserViewModel = viewModel(
+            it,
+            "UserViewModel",
+            UserViewModelFactory(UserRepository(ExerciseLogDatabase.getInstance(application).userDao()))
+        )
+
+        // Navigation controller
+        val navController = androidx.navigation.compose.rememberNavController()
+
+        // Observe user data and loading state
+        val user by userViewModel.user.observeAsState()
+        val isLoading by userViewModel.isLoading.observeAsState(false)
+
+        if (isLoading) {
+            LoadingScreen()
+        } else {
+            androidx.navigation.compose.NavHost(
+                navController = navController,
+                startDestination = if (user == null) "init" else "exerciseLog"
+            ) {
+                composable("init") {
+                    InitScreen(
+                        userViewModel = userViewModel,
+                        onInitComplete = {
+                            navController.navigate("exerciseLog") {
+                                popUpTo("init") { inclusive = true }
+                            }
+                        }
+                    )
+                }
+                composable("exerciseLog") {
+                    ExerciseLogScreen(
+                        exerciseLogViewModel = exerciseLogViewModel,
+                        exerciseViewModel = exerciseViewModel,
+                        userViewModel = userViewModel
+                    )
+                }
+            }
+        }
+    }
+}
+@Composable
+fun LoadingScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Loading...",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

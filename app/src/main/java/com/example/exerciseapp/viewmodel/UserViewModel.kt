@@ -15,6 +15,8 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+    private val _allUserRecords = MutableLiveData<List<User>>()
+    val allUserRecords: LiveData<List<User>> = _allUserRecords
 
     init {
         fetchLastUser() // Fetch data when ViewModel is created
@@ -25,6 +27,15 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         viewModelScope.launch {
             _user.value = repository.getLastUser()
             _isLoading.value = false // Stop loading
+        }
+    }
+
+    fun fetchAllUsers() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            _allUserRecords.value = repository.getAllUsers()
+            _isLoading.value = false
+
         }
     }
 
