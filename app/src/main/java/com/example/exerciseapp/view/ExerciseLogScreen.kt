@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import com.example.exerciseapp.view.components.ExerciseLogRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,11 +44,16 @@ fun ExerciseLogScreen(
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
     val user by userViewModel.user.observeAsState(null)
     val allUserRecords by userViewModel.allUserRecords.observeAsState(emptyList())
+    val todayLogs by exerciseLogViewModel.todayLogs.observeAsState(listOf())
+
 
     var showProgressDialog by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     val number = remember { mutableStateOf("") }
     var selectedActivity by remember { mutableStateOf("") }
+    var isTodayFilterOn by remember { mutableStateOf(false) }
+    val logsToShow = if (isTodayFilterOn) todayLogs else allLogs // Determine which logs to display
+
 
     LaunchedEffect(allUserRecords) {
 
@@ -85,6 +91,20 @@ fun ExerciseLogScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+            // Toggle Button for filtering today's logs
+            Button(
+                onClick = { isTodayFilterOn = !isTodayFilterOn },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = if (isTodayFilterOn) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text(if (isTodayFilterOn) "Show All Logs" else "Show Today's Logs")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Scrollable log entries
             Box(
@@ -97,7 +117,7 @@ fun ExerciseLogScreen(
                         .fillMaxSize()
                         .padding(bottom = 72.dp)
                 ) {
-                    items(allLogs) { log ->
+                    items(logsToShow) { log ->
                         ExerciseLogRow(
                             log = log,
                             onDelete = { exerciseLogViewModel.deleteLogById(log.id) }

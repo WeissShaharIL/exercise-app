@@ -13,12 +13,14 @@ class ExerciseLogViewModel(application: Application) : AndroidViewModel(applicat
 
     private val repository: ExerciseLogRepository
     val allLogs: LiveData<List<ExerciseLog>>
+    val todayLogs: LiveData<List<ExerciseLog>>
 
     init {
         // Initialize database and repository
         val dao = ExerciseLogDatabase.getInstance(application).exerciseLogDao()
         repository = ExerciseLogRepository(dao)
         allLogs = repository.allLogs
+        todayLogs = repository.getTodayLogs()
     }
 
     // Insert a new log

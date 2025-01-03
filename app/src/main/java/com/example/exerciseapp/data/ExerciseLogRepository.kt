@@ -16,6 +16,12 @@ class ExerciseLogRepository(private val exerciseLogDao: ExerciseLogDao) {
         }
     }
 
+
+    fun getTodayLogs(): LiveData<List<ExerciseLog>> {
+        return exerciseLogDao.getTodayLogs()
+    }
+
+
     // Delete a log by ID
     suspend fun deleteLogById(id: Int) {
         withContext(Dispatchers.IO) {
