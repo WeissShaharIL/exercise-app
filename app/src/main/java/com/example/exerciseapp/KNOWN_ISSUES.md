@@ -1,6 +1,6 @@
 # Known Issues
 
-This file documents known bugs in the project.
+This file documents known bugs and tasks in the project.
 
 ## Bug List
 
@@ -34,3 +34,22 @@ This file documents known bugs in the project.
 - **Impact**: Precision error in the database for height values.
 - **Workaround**: Round the value in queries or UI before displaying it.
 - **Status**: 🔴 Open
+
+### Bug ID: BUG-004
+- **Description**: Rotating the phone causes all data on the screen to disappear.
+- **Steps to Reproduce**:
+  1. Open the app and navigate to any screen with data.
+  2. Rotate the phone to switch orientations.
+  3. Observe that all data disappears.
+- **Impact**: Major usability issue - users lose their current session data.
+- **Workaround**: None.
+- **Status**: 🔴 Open
+
+### Task ID: TASK-001
+- **Description**: Update `ExerciseLogScreen.kt` to use the `ViewModel` for filtering days instead of holding the logic within the composable.
+- **Steps to Complete**:
+  1. Refactor the `ExerciseLogScreen` composable to remove filtering logic.
+  2. Ensure filtering is managed by the `ViewModel` and data is updated accordingly.
+  3. Test the refactored screen to ensure proper functionality.
+- **Impact**: Improves code maintainability and adheres to MVVM architecture principles.
+- **Status**: 🟡 In Progress

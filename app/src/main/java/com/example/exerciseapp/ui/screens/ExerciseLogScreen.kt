@@ -1,35 +1,17 @@
 package com.example.exerciseapp.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import com.example.exerciseapp.view.components.ExerciseLogRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.exerciseapp.view.components.ActivityDropdown
-import com.example.exerciseapp.view.components.AddActivityLog
-import com.example.exerciseapp.view.components.ProgressDialog
-import com.example.exerciseapp.view.components.UserDetailsDialog
+import com.example.exerciseapp.view.components.*
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
@@ -40,30 +22,46 @@ fun ExerciseLogScreen(
     exerciseViewModel: ExerciseViewModel,
     userViewModel: UserViewModel
 ) {
+    // Observed states
     val allLogs by exerciseLogViewModel.allLogs.observeAsState(listOf())
     val allExercises by exerciseViewModel.allExercises.observeAsState(listOf())
     val user by userViewModel.user.observeAsState(null)
     val allUserRecords by userViewModel.allUserRecords.observeAsState(emptyList())
     val todayLogs by exerciseLogViewModel.todayLogs.observeAsState(listOf())
 
-
+    // UI states
     var showProgressDialog by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     val number = remember { mutableStateOf("") }
     var selectedActivity by remember { mutableStateOf("") }
     var isTodayFilterOn by remember { mutableStateOf(false) }
-    val logsToShow = if (isTodayFilterOn) todayLogs else allLogs // Determine which logs to display
+    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
-
-    LaunchedEffect(allUserRecords) {
-
-        if (allUserRecords.isNotEmpty() && !showProgressDialog) {
-            showProgressDialog = true
-
+    // Logs filtering logic
+    val logsToShow = when {
+        isTodayFilterOn -> todayLogs
+        selectedDate != null -> allLogs.filter { log ->
+            val logCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = log.timestamp
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            val selectedCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = selectedDate!!
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            logCalendar == selectedCalendar
         }
+        else -> allLogs
     }
 
-
+    // UI Layout
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,22 +89,20 @@ fun ExerciseLogScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            // Toggle Button for filtering today's logs
-            Button(
-                onClick = { isTodayFilterOn = !isTodayFilterOn },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = if (isTodayFilterOn) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.secondary
-                )
-            ) {
-                Text(if (isTodayFilterOn) "Show All Logs" else "Show Today's Logs")
-            }
+
+            FilterButtons(
+                isTodayFilterOn = isTodayFilterOn,
+                onToggleToday = { isTodayFilterOn = it },
+                onSelectDate = { showDatePicker = true },
+                onClearFilters = {
+                    isTodayFilterOn = false
+                    selectedDate = null
+                }
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Scrollable log entries
+            // Log Entries List
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -127,56 +123,133 @@ fun ExerciseLogScreen(
             }
         }
 
-        // Buttons at the bottom
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { showDialog = true },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("User Database")
-            }
+        DatePicker(
+            showDatePicker = showDatePicker,
+            onDateSelected = { selectedDate = it },
+            onDismissRequest = { showDatePicker = false }
+        )
 
-            Spacer(modifier = Modifier.width(8.dp))
+        BottomButtons(
+            onUserDatabaseClick = { showDialog = true },
+            onProgressClick = {
+                userViewModel.fetchAllUsers()
+                showProgressDialog = true
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
 
-            Button(
-                onClick = {
+        // Other Modals
+        if (showDialog) {
+            UserDetailsDialog(
+                initialHeight = user?.height?.toString() ?: "1.50",
+                initialWeight = user?.weight?.toString() ?: "",
+                onDismiss = { showDialog = false },
+                onSave = { height, weight ->
+                    userViewModel.saveUser(height = height, weight = weight)
+                    showDialog = false
+                }
+            )
+        }
 
-                    userViewModel.fetchAllUsers()
-                    showProgressDialog = false // Ensure previous state doesn't interfere
-                    showProgressDialog = true // Trigger dialog opening
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Progress")
-            }
+        if (showProgressDialog) {
+            ProgressDialog(
+                records = allUserRecords,
+                onDismiss = { showProgressDialog = false }
+            )
         }
     }
+}
 
-    if (showDialog) {
-        UserDetailsDialog(
-            initialHeight = user?.height?.toString() ?: "1.50",
-            initialWeight = user?.weight?.toString() ?: "",
-            onDismiss = { showDialog = false },
-            onSave = { height, weight ->
-                userViewModel.saveUser(height = height, weight = weight)
-                showDialog = false
-            }
-        )
+@Composable
+fun FilterButtons(
+    isTodayFilterOn: Boolean,
+    onToggleToday: (Boolean) -> Unit,
+    onSelectDate: () -> Unit,
+    onClearFilters: () -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Button(
+            onClick = { onToggleToday(!isTodayFilterOn) },
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = if (isTodayFilterOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Today")
+        }
+
+        Button(
+            onClick = onSelectDate,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Select Date")
+        }
+
+        Button(
+            onClick = onClearFilters,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary
+            )
+        ) {
+            Text("Clear Filters")
+        }
     }
+}
 
-    if (showProgressDialog) {
+@Composable
+fun BottomButtons(
+    onUserDatabaseClick: () -> Unit,
+    onProgressClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Button(
+            onClick = onUserDatabaseClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("User Database")
+        }
 
-        ProgressDialog(
-            records = allUserRecords,
-            onDismiss = {
+        Spacer(modifier = Modifier.width(8.dp))
 
-                showProgressDialog = false
-            }
-        )
+        Button(
+            onClick = onProgressClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("Progress")
+        }
+    }
+}
+
+@Composable
+fun DatePicker(
+    showDatePicker: Boolean,
+    onDateSelected: (Long) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    if (showDatePicker) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        android.app.DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val calendar = java.util.Calendar.getInstance()
+                calendar.set(year, month, dayOfMonth)
+                onDateSelected(calendar.timeInMillis)
+                onDismissRequest()
+            },
+            java.util.Calendar.getInstance().get(java.util.Calendar.YEAR),
+            java.util.Calendar.getInstance().get(java.util.Calendar.MONTH),
+            java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH)
+        ).show()
     }
 }
