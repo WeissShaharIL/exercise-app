@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.exerciseapp.data.User
+import com.example.exerciseapp.data.entities.User
 
 @Composable
 fun ProgressDialog(

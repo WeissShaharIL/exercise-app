@@ -1,8 +1,9 @@
-package com.example.exerciseapp.data
+package com.example.exerciseapp.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.exerciseapp.data.entities.User
 
 
 @Dao

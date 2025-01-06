@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.example.exerciseapp.data.Exercise
-import com.example.exerciseapp.data.ExerciseLogDatabase
-import com.example.exerciseapp.data.ExerciseRepository
+import com.example.exerciseapp.data.entities.Exercise
+import com.example.exerciseapp.data.db.ExerciseLogDatabase
+import com.example.exerciseapp.data.repository.ExerciseRepository
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(application: Application) : AndroidViewModel(application) {

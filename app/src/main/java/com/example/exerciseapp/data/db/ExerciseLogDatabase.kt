@@ -1,4 +1,4 @@
-package com.example.exerciseapp.data
+package com.example.exerciseapp.data.db
 
 import android.content.Context
 import android.util.Log
@@ -6,6 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.exerciseapp.data.dao.ExerciseDao
+import com.example.exerciseapp.data.dao.ExerciseLogDao
+import com.example.exerciseapp.data.dao.UserDao
+import com.example.exerciseapp.data.entities.Exercise
+import com.example.exerciseapp.data.entities.ExerciseLog
+import com.example.exerciseapp.data.entities.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

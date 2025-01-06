@@ -1,12 +1,13 @@
-package com.example.exerciseapp.view
+package com.example.exerciseapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.exerciseapp.ui.screens.ExerciseLogScreen
+import com.example.exerciseapp.ui.screens.InitScreen
 import com.example.exerciseapp.viewmodel.*
 
 @Composable

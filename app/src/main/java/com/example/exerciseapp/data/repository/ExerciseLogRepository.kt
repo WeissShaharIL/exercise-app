@@ -1,6 +1,10 @@
-package com.example.exerciseapp.data
+package com.example.exerciseapp.data.repository
 
 import androidx.lifecycle.LiveData
+import com.example.exerciseapp.data.dao.ExerciseDao
+import com.example.exerciseapp.data.dao.ExerciseLogDao
+import com.example.exerciseapp.data.entities.Exercise
+import com.example.exerciseapp.data.entities.ExerciseLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
