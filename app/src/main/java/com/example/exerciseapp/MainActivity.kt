@@ -22,9 +22,9 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import com.example.exerciseapp.data.ExerciseLogDatabase
-import com.example.exerciseapp.data.UserRepository
-import com.example.exerciseapp.view.AppNavigation
+import com.example.exerciseapp.data.db.ExerciseLogDatabase
+import com.example.exerciseapp.data.repository.UserRepository
+import com.example.exerciseapp.navigation.AppNavigation
 import com.example.exerciseapp.viewmodel.AppStateViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
 import com.example.exerciseapp.viewmodel.UserViewModelFactory

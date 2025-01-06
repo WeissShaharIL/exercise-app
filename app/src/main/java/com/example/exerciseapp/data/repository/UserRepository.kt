@@ -1,4 +1,7 @@
-package com.example.exerciseapp.data
+package com.example.exerciseapp.data.repository
+
+import com.example.exerciseapp.data.dao.UserDao
+import com.example.exerciseapp.data.entities.User
 
 class UserRepository(private val userDao: UserDao) {
     suspend fun insertUser(user: User) = userDao.insertUser(user)

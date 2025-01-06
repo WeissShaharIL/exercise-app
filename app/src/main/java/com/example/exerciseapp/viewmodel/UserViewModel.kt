@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.exerciseapp.data.User
-import com.example.exerciseapp.data.UserRepository
+import com.example.exerciseapp.data.entities.User
+import com.example.exerciseapp.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class UserViewModel(private val repository: UserRepository) : ViewModel() {

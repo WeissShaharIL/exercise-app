@@ -1,4 +1,4 @@
-package com.example.exerciseapp.view
+package com.example.exerciseapp.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
