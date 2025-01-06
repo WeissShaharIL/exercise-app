@@ -123,22 +123,11 @@ fun ExerciseLogScreen(
             }
         }
 
-        // Date Picker
-        if (showDatePicker) {
-            val context = androidx.compose.ui.platform.LocalContext.current
-            android.app.DatePickerDialog(
-                context,
-                { _, year, month, dayOfMonth ->
-                    val calendar = java.util.Calendar.getInstance()
-                    calendar.set(year, month, dayOfMonth)
-                    selectedDate = calendar.timeInMillis
-                    showDatePicker = false
-                },
-                java.util.Calendar.getInstance().get(java.util.Calendar.YEAR),
-                java.util.Calendar.getInstance().get(java.util.Calendar.MONTH),
-                java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH)
-            ).show()
-        }
+        DatePicker(
+            showDatePicker = showDatePicker,
+            onDateSelected = { selectedDate = it },
+            onDismissRequest = { showDatePicker = false }
+        )
 
         BottomButtons(
             onUserDatabaseClick = { showDialog = true },
@@ -242,3 +231,25 @@ fun BottomButtons(
     }
 }
 
+@Composable
+fun DatePicker(
+    showDatePicker: Boolean,
+    onDateSelected: (Long) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    if (showDatePicker) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        android.app.DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val calendar = java.util.Calendar.getInstance()
+                calendar.set(year, month, dayOfMonth)
+                onDateSelected(calendar.timeInMillis)
+                onDismissRequest()
+            },
+            java.util.Calendar.getInstance().get(java.util.Calendar.YEAR),
+            java.util.Calendar.getInstance().get(java.util.Calendar.MONTH),
+            java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+}
