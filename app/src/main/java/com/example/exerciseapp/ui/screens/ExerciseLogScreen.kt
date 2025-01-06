@@ -90,41 +90,15 @@ fun ExerciseLogScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Filter Buttons
-            Row(
-                modifier = Modifier.padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { isTodayFilterOn = !isTodayFilterOn },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = if (isTodayFilterOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Today")
+            FilterButtons(
+                isTodayFilterOn = isTodayFilterOn,
+                onToggleToday = { isTodayFilterOn = it },
+                onSelectDate = { showDatePicker = true },
+                onClearFilters = {
+                    isTodayFilterOn = false
+                    selectedDate = null
                 }
-
-                Button(
-                    onClick = { showDatePicker = true },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Select Date")
-                }
-
-                Button(
-                    onClick = {
-                        isTodayFilterOn = false
-                        selectedDate = null
-                    },
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary
-                    )
-                ) {
-                    Text("Clear Filters")
-                }
-            }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -213,3 +187,44 @@ fun ExerciseLogScreen(
         }
     }
 }
+
+@Composable
+fun FilterButtons(
+    isTodayFilterOn: Boolean,
+    onToggleToday: (Boolean) -> Unit,
+    onSelectDate: () -> Unit,
+    onClearFilters: () -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Button(
+            onClick = { onToggleToday(!isTodayFilterOn) },
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = if (isTodayFilterOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Today")
+        }
+
+        Button(
+            onClick = onSelectDate,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            Text("Select Date")
+        }
+
+        Button(
+            onClick = onClearFilters,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiary
+            )
+        ) {
+            Text("Clear Filters")
+        }
+    }
+}
+
