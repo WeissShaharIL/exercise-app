@@ -140,31 +140,15 @@ fun ExerciseLogScreen(
             ).show()
         }
 
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { showDialog = true },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("User Database")
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(
-                onClick = {
-                    userViewModel.fetchAllUsers()
-                    showProgressDialog = true
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Progress")
-            }
-        }
+        BottomButtons(
+            onUserDatabaseClick = { showDialog = true },
+            onProgressClick = {
+                userViewModel.fetchAllUsers()
+                showProgressDialog = true
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(16.dp)
+        )
 
         // Other Modals
         if (showDialog) {
@@ -224,6 +208,36 @@ fun FilterButtons(
             )
         ) {
             Text("Clear Filters")
+        }
+    }
+}
+
+@Composable
+fun BottomButtons(
+    onUserDatabaseClick: () -> Unit,
+    onProgressClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Button(
+            onClick = onUserDatabaseClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("User Database")
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Button(
+            onClick = onProgressClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text("Progress")
         }
     }
 }
