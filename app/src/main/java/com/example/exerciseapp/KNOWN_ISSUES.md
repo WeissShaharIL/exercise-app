@@ -53,3 +53,15 @@ This file documents known bugs and tasks in the project.
   3. Test the refactored screen to ensure proper functionality.
 - **Impact**: Improves code maintainability and adheres to MVVM architecture principles.
 - **Status**: 🟡 In Progress
+
+  ### Bug ID: BUG-005
+- **Description**: Clicking on the calendar button opens the dialog. If the user selects a date and presses "OK," it works as expected. However, if the user dismisses the calendar window or cancels it, the calendar button stops responding on subsequent clicks.
+- **Steps to Reproduce**:
+  1. Launch the app and navigate to the screen with the calendar button.
+  2. Click the calendar button to open the date picker dialog.
+  3. Dismiss or cancel the calendar window without selecting a date.
+  4. Attempt to click the calendar button again.
+- **Impact**: Prevents users from reopening the date picker, causing usability issues.
+- **Workaround**: Restarting the app allows the calendar button to work again.
+- **Status**: 🔴 Open
+
