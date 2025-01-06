@@ -75,7 +75,7 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.6.0")
 
-
+    implementation ("androidx.compose.material:material-icons-extended:1.5.1")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.4")

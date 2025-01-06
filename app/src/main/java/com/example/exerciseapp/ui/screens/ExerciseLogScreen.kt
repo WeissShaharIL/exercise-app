@@ -3,14 +3,21 @@ package com.example.exerciseapp.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
+
+import androidx.compose.material.icons.filled.CalendarToday
+
 import androidx.compose.ui.unit.dp
+
 import com.example.exerciseapp.view.components.*
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
 import com.example.exerciseapp.viewmodel.ExerciseViewModel
@@ -58,6 +65,7 @@ fun ExerciseLogScreen(
             }
             logCalendar == selectedCalendar
         }
+
         else -> allLogs
     }
 
@@ -135,7 +143,8 @@ fun ExerciseLogScreen(
                 userViewModel.fetchAllUsers()
                 showProgressDialog = true
             },
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .padding(16.dp)
         )
 
@@ -187,7 +196,10 @@ fun FilterButtons(
                 containerColor = MaterialTheme.colorScheme.secondary
             )
         ) {
-            Text("Select Date")
+            Icon(
+                imageVector = Icons.Filled.CalendarToday,
+                contentDescription = "Select Date"
+            )
         }
 
         Button(
@@ -210,21 +222,25 @@ fun BottomButtons(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
             onClick = onUserDatabaseClick,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentWidth()
         ) {
-            Text("User Database")
+            Text("Edit Profile")
         }
 
         Spacer(modifier = Modifier.width(8.dp))
 
         Button(
             onClick = onProgressClick,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentWidth()
         ) {
             Text("Progress")
         }
