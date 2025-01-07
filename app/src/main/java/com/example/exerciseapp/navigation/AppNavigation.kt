@@ -14,7 +14,8 @@ import com.example.exerciseapp.viewmodel.*
 fun AppNavigation(
     exerciseLogViewModel: ExerciseLogViewModel,
     exerciseViewModel: ExerciseViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    calorieIntakeViewModel: CalorieIntakeViewModel
 ) {
     val navController = rememberNavController()
     val user by userViewModel.user.observeAsState()
@@ -37,7 +38,10 @@ fun AppNavigation(
             ExerciseLogScreen(
                 exerciseLogViewModel = exerciseLogViewModel,
                 exerciseViewModel = exerciseViewModel,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                calorieIntakeViewModel= calorieIntakeViewModel
+
+
             )
         }
     }
