@@ -156,12 +156,12 @@ fun ExerciseLogScreen(
                             log = log,
                             onDelete = { exerciseLogViewModel.deleteLogById(log.id) }
                         )
-                        //Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
+
                     }
                 }
             }
 
-            Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
+
             CalorieIntakeSection(
                 calorieDescription = calorieDescription,
                 calorieAmount = calorieAmount,
