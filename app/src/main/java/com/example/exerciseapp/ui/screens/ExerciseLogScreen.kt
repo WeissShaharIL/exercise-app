@@ -261,11 +261,15 @@ fun DatePicker(
                 val calendar = java.util.Calendar.getInstance()
                 calendar.set(year, month, dayOfMonth)
                 onDateSelected(calendar.timeInMillis)
-                onDismissRequest()
+                onDismissRequest() // Ensure state is reset
             },
             java.util.Calendar.getInstance().get(java.util.Calendar.YEAR),
             java.util.Calendar.getInstance().get(java.util.Calendar.MONTH),
             java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH)
-        ).show()
+        ).apply {
+            // Reset state when the dialog is canceled or dismissed
+            setOnCancelListener { onDismissRequest() }
+            setOnDismissListener { onDismissRequest() }
+        }.show()
     }
 }
