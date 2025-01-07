@@ -29,6 +29,8 @@ import com.example.exerciseapp.viewmodel.AppStateViewModel
 import com.example.exerciseapp.viewmodel.UserViewModel
 import com.example.exerciseapp.viewmodel.UserViewModelFactory
 import com.example.exerciseapp.view.components.LoadingScreen
+import com.example.exerciseapp.viewmodel.CalorieIntakeViewModel
+import com.example.exerciseapp.viewmodel.CalorieIntakeViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,6 +99,11 @@ fun MainScreen(application: Application) {
                 )
             )
         )
+        val calorieIntakeViewModel: CalorieIntakeViewModel = viewModel(
+            it,
+            "CalorieIntakeViewModel",
+            CalorieIntakeViewModelFactory(application = application)
+        )
         val isLoading by userViewModel.isLoading.observeAsState(false)
         if (isLoading) {
             LoadingScreen()
@@ -104,7 +111,8 @@ fun MainScreen(application: Application) {
             AppNavigation(
                 exerciseLogViewModel = exerciseLogViewModel,
                 exerciseViewModel = exerciseViewModel,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                calorieIntakeViewModel= calorieIntakeViewModel
             )
         }
     }
