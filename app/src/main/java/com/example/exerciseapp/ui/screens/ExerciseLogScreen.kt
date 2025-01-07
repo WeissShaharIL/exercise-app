@@ -79,24 +79,18 @@ fun ExerciseLogScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Dropdown for activity selection
             ActivityDropdown(
                 activities = allExercises,
                 selectedActivity = selectedActivity,
                 onActivitySelected = { selectedActivity = it }
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Input and Add Button
             AddActivityLog(
                 selectedActivity = selectedActivity,
                 number = number,
                 onClearInput = { number.value = "" },
                 exerciseLogViewModel = exerciseLogViewModel
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             FilterButtons(
                 isTodayFilterOn = isTodayFilterOn,
