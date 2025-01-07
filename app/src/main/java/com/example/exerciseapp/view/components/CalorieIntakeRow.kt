@@ -1,7 +1,11 @@
 package com.example.exerciseapp.view.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,8 +30,8 @@ fun CalorieIntakeRow(
             Text(text = intake.description, style = MaterialTheme.typography.bodyLarge)
             Text(text = "${intake.calories} Calories", style = MaterialTheme.typography.bodySmall)
         }
-        Button(onClick = { onDelete(intake.id) }) {
-            Text("Delete")
+        IconButton(onClick = { onDelete(intake.id) }) {
+            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Log")
         }
     }
 }

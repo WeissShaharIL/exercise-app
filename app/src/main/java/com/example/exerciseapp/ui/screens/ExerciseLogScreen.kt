@@ -96,7 +96,7 @@ fun ExerciseLogScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -125,7 +125,7 @@ fun ExerciseLogScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Log Entries List
-            Text("Log Entries", style = MaterialTheme.typography.titleMedium)
+            //Text("Log Entries", style = MaterialTheme.typography.titleMedium)
             Box(
                 modifier = Modifier
                     .height(200.dp)
