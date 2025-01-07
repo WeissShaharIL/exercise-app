@@ -12,11 +12,15 @@ import kotlinx.coroutines.launch
 class CalorieIntakeViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: CalorieIntakeRepository
     val allCalorieIntake: LiveData<List<CalorieIntake>>
+    val todayCalorieIntakes: LiveData<List<CalorieIntake>>
+
 
     init {
         val calorieIntakeDao = ExerciseLogDatabase.getInstance(application).calorieIntakeDao()
         repository = CalorieIntakeRepository(calorieIntakeDao)
         allCalorieIntake = repository.allCalorieIntakes
+        todayCalorieIntakes = repository.getTodayCalorieIntakes() // Similar to todayLogs
+
     }
 
     // Insert a calorie intake record

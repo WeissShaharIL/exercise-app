@@ -30,6 +30,7 @@ fun ExerciseLogScreen(
     val user by userViewModel.user.observeAsState(null)
     val allUserRecords by userViewModel.allUserRecords.observeAsState(emptyList())
     val todayLogs by exerciseLogViewModel.todayLogs.observeAsState(listOf())
+    val todayCalorieIntakes by calorieIntakeViewModel.todayCalorieIntakes.observeAsState(listOf())
     val calorieDescription = remember { mutableStateOf("") }
     val calorieAmount = remember { mutableStateOf("") }
 
@@ -66,22 +67,6 @@ fun ExerciseLogScreen(
         }
 
         else -> allLogs
-    }
-    val todayCalorieIntakes = calorieIntakes.filter { intake ->
-        val intakeCalendar = java.util.Calendar.getInstance().apply {
-            timeInMillis = intake.timestamp
-            set(java.util.Calendar.HOUR_OF_DAY, 0)
-            set(java.util.Calendar.MINUTE, 0)
-            set(java.util.Calendar.SECOND, 0)
-            set(java.util.Calendar.MILLISECOND, 0)
-        }
-        val todayCalendar = java.util.Calendar.getInstance().apply {
-            set(java.util.Calendar.HOUR_OF_DAY, 0)
-            set(java.util.Calendar.MINUTE, 0)
-            set(java.util.Calendar.SECOND, 0)
-            set(java.util.Calendar.MILLISECOND, 0)
-        }
-        intakeCalendar == todayCalendar
     }
 
     val calorieIntakesToShow = when {

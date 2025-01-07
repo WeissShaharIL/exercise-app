@@ -13,6 +13,8 @@ interface CalorieIntakeDao {
 
     @Insert
     suspend fun insertCalorieIntake(calorieIntake: CalorieIntake)
+    @Query("SELECT * FROM calorie_intake WHERE date(timestamp / 1000, 'unixepoch') = date('now') ORDER BY timestamp DESC")
+    fun getTodayCalorieIntakes(): LiveData<List<CalorieIntake>>
 
     @Query("DELETE FROM calorie_intake WHERE id = :id")
     suspend fun deleteCalorieIntake(id: Int)
