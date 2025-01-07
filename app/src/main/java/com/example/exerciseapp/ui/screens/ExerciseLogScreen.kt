@@ -3,22 +3,13 @@ package com.example.exerciseapp.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.exerciseapp.data.entities.CalorieIntake
 import com.example.exerciseapp.view.components.*
 import com.example.exerciseapp.viewmodel.CalorieIntakeViewModel
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
@@ -86,13 +77,10 @@ fun ExerciseLogScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Exercise Input Section
-            ActivityDropdown(
+            ActivityInputSection(
                 activities = allExercises,
                 selectedActivity = selectedActivity,
-                onActivitySelected = { selectedActivity = it }
-            )
-            AddActivityLog(
-                selectedActivity = selectedActivity,
+                onActivitySelected = { selectedActivity = it },
                 number = number,
                 onClearInput = { number.value = "" },
                 exerciseLogViewModel = exerciseLogViewModel
@@ -132,8 +120,6 @@ fun ExerciseLogScreen(
                 }
             }
 
-
-
             Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
             CalorieIntakeSection(
                 calorieDescription = calorieDescription,
@@ -160,7 +146,6 @@ fun ExerciseLogScreen(
                 .padding(16.dp)
         )
 
-        // Other Modals
         if (showDialog) {
             UserDetailsDialog(
                 initialHeight = user?.height?.toString() ?: "1.50",
