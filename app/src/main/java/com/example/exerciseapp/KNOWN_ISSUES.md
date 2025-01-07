@@ -63,5 +63,5 @@ This file documents known bugs and tasks in the project.
   4. Attempt to click the calendar button again.
 - **Impact**: Prevents users from reopening the date picker, causing usability issues.
 - **Workaround**: Restarting the app allows the calendar button to work again.
-- **Status**: 🔴 Open
+- **Status**: 🟢 Closed
 
