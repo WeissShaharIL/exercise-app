@@ -135,63 +135,12 @@ fun ExerciseLogScreen(
 
 
             Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = calorieDescription.value,
-                    onValueChange = { calorieDescription.value = it },
-                    label = { Text("Description") },
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = calorieAmount.value,
-                    onValueChange = { calorieAmount.value = it },
-                    label = { Text("Calories") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-                Button(
-                    onClick = {
-                        val calories = calorieAmount.value.toIntOrNull()
-                        if (!calorieDescription.value.isBlank() && calories != null && calories > 0) {
-                            calorieIntakeViewModel.insertCalorieIntake(
-                                CalorieIntake(
-                                    description = calorieDescription.value,
-                                    calories = calories
-                                )
-                            )
-                            calorieDescription.value = ""
-                            calorieAmount.value = ""
-                        }
-                    }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Calorie Intake")
-                }
-            } // Calorie Intake Input Section
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(
-                modifier = Modifier
-                    .height(200.dp) // Adjust as needed
-                    .fillMaxWidth()
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 16.dp)
-                ) {
-                    items(calorieIntakes) { intake ->
-                        CalorieIntakeRow(
-                            intake = intake,
-                            onDelete = { calorieIntakeViewModel.deleteCalorieIntakeById(it) }
-                        )
-                    }
-                }
-            }
+            CalorieIntakeSection(
+                calorieDescription = calorieDescription,
+                calorieAmount = calorieAmount,
+                calorieIntakes = calorieIntakes,
+                calorieIntakeViewModel = calorieIntakeViewModel
+            )
         }
 
         DatePicker(
