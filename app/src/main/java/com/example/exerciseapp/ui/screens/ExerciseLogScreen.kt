@@ -83,7 +83,29 @@ fun ExerciseLogScreen(
         }
         intakeCalendar == todayCalendar
     }
-    val calorieIntakesToShow = if (isTodayFilterOn) todayCalorieIntakes else calorieIntakes
+
+    val calorieIntakesToShow = when {
+        isTodayFilterOn -> todayCalorieIntakes
+        selectedDate != null -> calorieIntakes.filter { intake ->
+            val intakeCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = intake.timestamp
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            val selectedCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = selectedDate!!
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            intakeCalendar == selectedCalendar
+        }
+        else -> calorieIntakes
+    }
+
 
     // UI Layout
     Box(
