@@ -3,22 +3,13 @@ package com.example.exerciseapp.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.exerciseapp.data.entities.CalorieIntake
 import com.example.exerciseapp.view.components.*
 import com.example.exerciseapp.viewmodel.CalorieIntakeViewModel
 import com.example.exerciseapp.viewmodel.ExerciseLogViewModel
@@ -86,13 +77,10 @@ fun ExerciseLogScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Exercise Input Section
-            ActivityDropdown(
+            ActivityInputSection(
                 activities = allExercises,
                 selectedActivity = selectedActivity,
-                onActivitySelected = { selectedActivity = it }
-            )
-            AddActivityLog(
-                selectedActivity = selectedActivity,
+                onActivitySelected = { selectedActivity = it },
                 number = number,
                 onClearInput = { number.value = "" },
                 exerciseLogViewModel = exerciseLogViewModel
@@ -132,66 +120,13 @@ fun ExerciseLogScreen(
                 }
             }
 
-
-
             Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = calorieDescription.value,
-                    onValueChange = { calorieDescription.value = it },
-                    label = { Text("Description") },
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = calorieAmount.value,
-                    onValueChange = { calorieAmount.value = it },
-                    label = { Text("Calories") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-                Button(
-                    onClick = {
-                        val calories = calorieAmount.value.toIntOrNull()
-                        if (!calorieDescription.value.isBlank() && calories != null && calories > 0) {
-                            calorieIntakeViewModel.insertCalorieIntake(
-                                CalorieIntake(
-                                    description = calorieDescription.value,
-                                    calories = calories
-                                )
-                            )
-                            calorieDescription.value = ""
-                            calorieAmount.value = ""
-                        }
-                    }
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Calorie Intake")
-                }
-            } // Calorie Intake Input Section
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(
-                modifier = Modifier
-                    .height(200.dp) // Adjust as needed
-                    .fillMaxWidth()
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 16.dp)
-                ) {
-                    items(calorieIntakes) { intake ->
-                        CalorieIntakeRow(
-                            intake = intake,
-                            onDelete = { calorieIntakeViewModel.deleteCalorieIntakeById(it) }
-                        )
-                    }
-                }
-            }
+            CalorieIntakeSection(
+                calorieDescription = calorieDescription,
+                calorieAmount = calorieAmount,
+                calorieIntakes = calorieIntakes,
+                calorieIntakeViewModel = calorieIntakeViewModel
+            )
         }
 
         DatePicker(
@@ -211,7 +146,6 @@ fun ExerciseLogScreen(
                 .padding(16.dp)
         )
 
-        // Other Modals
         if (showDialog) {
             UserDetailsDialog(
                 initialHeight = user?.height?.toString() ?: "1.50",
@@ -233,106 +167,3 @@ fun ExerciseLogScreen(
     }
 }
 
-@Composable
-fun FilterButtons(
-    isTodayFilterOn: Boolean,
-    onToggleToday: (Boolean) -> Unit,
-    onSelectDate: () -> Unit,
-    onClearFilters: () -> Unit
-) {
-    Row(
-        modifier = Modifier.padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Button(
-            onClick = { onToggleToday(!isTodayFilterOn) },
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = if (isTodayFilterOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text("Today")
-        }
-
-        Button(
-            onClick = onSelectDate,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Filled.CalendarToday,
-                contentDescription = "Select Date"
-            )
-        }
-
-        Button(
-            onClick = onClearFilters,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary
-            )
-        ) {
-            Text("Clear Filters")
-        }
-    }
-}
-
-@Composable
-fun BottomButtons(
-    onUserDatabaseClick: () -> Unit,
-    onProgressClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Button(
-            onClick = onUserDatabaseClick,
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentWidth()
-        ) {
-            Text("Edit Profile")
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Button(
-            onClick = onProgressClick,
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentWidth()
-        ) {
-            Text("Progress")
-        }
-    }
-}
-
-@Composable
-fun DatePicker(
-    showDatePicker: Boolean,
-    onDateSelected: (Long) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    if (showDatePicker) {
-        val context = androidx.compose.ui.platform.LocalContext.current
-        android.app.DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                val calendar = java.util.Calendar.getInstance()
-                calendar.set(year, month, dayOfMonth)
-                onDateSelected(calendar.timeInMillis)
-                onDismissRequest() // Ensure state is reset
-            },
-            java.util.Calendar.getInstance().get(java.util.Calendar.YEAR),
-            java.util.Calendar.getInstance().get(java.util.Calendar.MONTH),
-            java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH)
-        ).apply {
-            // Reset state when the dialog is canceled or dismissed
-            setOnCancelListener { onDismissRequest() }
-            setOnDismissListener { onDismissRequest() }
-        }.show()
-    }
-}

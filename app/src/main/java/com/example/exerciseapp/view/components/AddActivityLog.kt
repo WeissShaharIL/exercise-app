@@ -47,6 +47,9 @@ fun AddActivityLog(
             onValueChange = { number.value = it },
             label = { Text("Number") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier
+                .weight(1f) // Allocates equal space to this element
+                .padding(end = 8.dp) // Optional spacing for aesthetics
         )
 
         Button(
