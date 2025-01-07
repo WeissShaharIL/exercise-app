@@ -26,7 +26,7 @@ fun CalorieIntakeSection(
     calorieIntakeViewModel: CalorieIntakeViewModel
 ) {
     Column {
-        Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
+        //Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

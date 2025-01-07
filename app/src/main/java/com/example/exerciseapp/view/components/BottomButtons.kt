@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 
@@ -30,7 +32,11 @@ fun BottomButtons(
             onClick = onUserDatabaseClick,
             modifier = Modifier
                 .weight(1f)
-                .wrapContentWidth()
+                .wrapContentWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFADD8E6).copy(alpha = 0.8f), // Light Blue with transparency
+                contentColor = Color.Black // Text fully opaque
+            )
         ) {
             Text("Edit Profile")
         }
@@ -41,7 +47,11 @@ fun BottomButtons(
             onClick = onProgressClick,
             modifier = Modifier
                 .weight(1f)
-                .wrapContentWidth()
+                .wrapContentWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFADD8E6).copy(alpha = 0.8f), // Light Blue with transparency
+                contentColor = Color.Black // Text fully opaque
+            )
         ) {
             Text("Progress")
         }
