@@ -15,7 +15,9 @@ class CalorieIntakeRepository(private val calorieIntakeDao: CalorieIntakeDao) {
             calorieIntakeDao.insertCalorieIntake(calorieIntake)
         }
     }
-
+    fun getTodayCalorieIntakes(): LiveData<List<CalorieIntake>> {
+        return calorieIntakeDao.getTodayCalorieIntakes()
+    }
     suspend fun deleteCalorieIntake(id: Int) {
         withContext(Dispatchers.IO) {
             calorieIntakeDao.deleteCalorieIntake(id)

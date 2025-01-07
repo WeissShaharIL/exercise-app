@@ -30,8 +30,10 @@ fun ExerciseLogScreen(
     val user by userViewModel.user.observeAsState(null)
     val allUserRecords by userViewModel.allUserRecords.observeAsState(emptyList())
     val todayLogs by exerciseLogViewModel.todayLogs.observeAsState(listOf())
+    val todayCalorieIntakes by calorieIntakeViewModel.todayCalorieIntakes.observeAsState(listOf())
     val calorieDescription = remember { mutableStateOf("") }
     val calorieAmount = remember { mutableStateOf("") }
+
 
     // UI states
     var showProgressDialog by remember { mutableStateOf(false) }
@@ -41,6 +43,7 @@ fun ExerciseLogScreen(
     var isTodayFilterOn by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
+
 
     // Logs filtering logic
     val logsToShow = when {
@@ -65,6 +68,29 @@ fun ExerciseLogScreen(
 
         else -> allLogs
     }
+
+    val calorieIntakesToShow = when {
+        isTodayFilterOn -> todayCalorieIntakes
+        selectedDate != null -> calorieIntakes.filter { intake ->
+            val intakeCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = intake.timestamp
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            val selectedCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = selectedDate!!
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }
+            intakeCalendar == selectedCalendar
+        }
+        else -> calorieIntakes
+    }
+
 
     // UI Layout
     Box(
@@ -115,16 +141,16 @@ fun ExerciseLogScreen(
                             log = log,
                             onDelete = { exerciseLogViewModel.deleteLogById(log.id) }
                         )
-                        //Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
+
                     }
                 }
             }
 
-            Text("Track Calorie Intake", style = MaterialTheme.typography.titleMedium)
+
             CalorieIntakeSection(
                 calorieDescription = calorieDescription,
                 calorieAmount = calorieAmount,
-                calorieIntakes = calorieIntakes,
+                calorieIntakes = calorieIntakesToShow,
                 calorieIntakeViewModel = calorieIntakeViewModel
             )
         }
