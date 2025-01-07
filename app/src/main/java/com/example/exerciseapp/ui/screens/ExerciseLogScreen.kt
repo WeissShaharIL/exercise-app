@@ -33,6 +33,7 @@ fun ExerciseLogScreen(
     val calorieDescription = remember { mutableStateOf("") }
     val calorieAmount = remember { mutableStateOf("") }
 
+
     // UI states
     var showProgressDialog by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
@@ -41,6 +42,7 @@ fun ExerciseLogScreen(
     var isTodayFilterOn by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
+
 
     // Logs filtering logic
     val logsToShow = when {
@@ -65,6 +67,23 @@ fun ExerciseLogScreen(
 
         else -> allLogs
     }
+    val todayCalorieIntakes = calorieIntakes.filter { intake ->
+        val intakeCalendar = java.util.Calendar.getInstance().apply {
+            timeInMillis = intake.timestamp
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        val todayCalendar = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        intakeCalendar == todayCalendar
+    }
+    val calorieIntakesToShow = if (isTodayFilterOn) todayCalorieIntakes else calorieIntakes
 
     // UI Layout
     Box(
@@ -124,7 +143,7 @@ fun ExerciseLogScreen(
             CalorieIntakeSection(
                 calorieDescription = calorieDescription,
                 calorieAmount = calorieAmount,
-                calorieIntakes = calorieIntakes,
+                calorieIntakes = calorieIntakesToShow,
                 calorieIntakeViewModel = calorieIntakeViewModel
             )
         }
