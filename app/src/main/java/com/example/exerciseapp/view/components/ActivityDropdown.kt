@@ -17,10 +17,10 @@ import com.example.exerciseapp.data.entities.Exercise
 fun ActivityDropdown(
     activities: List<Exercise>,
     selectedActivity: String,
-    onActivitySelected: (String) -> Unit
+    onActivitySelected: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val expanded = remember { mutableStateOf(false) }
-
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
